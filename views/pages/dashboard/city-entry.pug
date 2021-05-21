@@ -1,0 +1,99 @@
+extends ../../includes/layout-dashboard
+block content
+  ol.breadcrumb
+    li.breadcrumb-item
+      a(href="/dashboard") Home
+    li.breadcrumb-item
+      a(href="/city") City
+    li.breadcrumb-item.active
+      span Entry
+  h1.page-header City Entry
+  div.row.from-wrapper
+    div.alert.alert-dismissible#alert(role='alert')
+      strong.alert-title#alertTitle
+      span#alertMessage
+      button.close(type='button', data-hide='alert', aria-label='Close')
+        span(aria-hidden='true') &times;
+    form.form-horizontal#entryForm(method='post', action=`${postUrl}`)
+      input#recordid(type='hidden', name='id', value=params.id)
+      input#createddate(type='hidden', name='createddate', value=params.createddate)
+      div.form-group.row
+        label.col-sm-2.control-label(for='city') City
+        div.col-sm-10
+          input.form-control#city(type='text', name='city', value=params.city, maxlength="55", required autofocus)
+      div.form-group.row
+        label.col-sm-2.control-label(for='description') Description
+        div.col-sm-10
+          input.form-control#description(type='text', name='description', value=params.description, maxlength="255")
+      // test start
+      div.form-group.row
+        label.col-sm-2.control-label(for='cityname') Sample Name
+        div.col-sm-10
+          select#cityname.selectpicker.form-control(name='city', value=params.city, data-value=params.city, data-live-search="true", data-size="3")
+            option(value="") [Select one]
+      div.form-group.row
+        label.col-sm-2.control-label(for='namebind') Sample Name Bind
+        div.col-sm-10
+          input.form-control#namebind(type='text', name='namebind', value=params.namebind, maxlength="255")
+      // test end
+      div.row.justify-content-md-center.form-actions
+        button.btn.btn-primary(type='submit', role='button') Save
+        a.btn.btn-secondary#actionCancel(href=listUrl, role='button') Cancel
+    form#postSuccessForm(method='GET', action=listUrl)
+  script.
+    $(document).ready(function() {
+      // test start
+      var token = "!{token}";
+      var secrethash = $.md5(token+"McQfTjWnZr4u7x!A%D*G-JaNdRgUkXp2");
+      // test end
+      $('div.sidebar-sticky li.nav-item').removeClass('active');
+      $('li#menu-city').addClass('active');
+      $("#alert").hide();
+      $('#entryForm').ajaxForm({
+        success: function(data) {
+          if (data.success) {
+            $("#alertTitle").html("Success");
+            $("#alertMessage").html("Save Success!");
+            $("#alert").addClass("alert-success").show();
+            var postFrm = $('#postSuccessForm');
+            var params = $.url(postFrm.attr('action')).param();
+            if (!params) {
+              for(var key in params) {
+                postFrm.append($('<input type="hidden" name="'+key+'" value="'+ params[key] +'" />'));
+              }
+            }
+            window.setTimeout(function(){
+              postFrm.submit();
+            }, 2 * 1000);
+          } else {
+            $("#alertTitle").html("Error");
+            $("#alertMessage").html("Error on save!");
+            $("#alert").addClass("alert-danger").show();
+          }
+        }
+      });
+      // test start
+      $('#cityname').Template({
+          "template": "<option value='${=id}'> ${=city} <span class='d-none'> $ ${=citycode} </span> </option>",
+          "ajax": {
+            "url": "/api/city",
+            "headers": {"authorization": "Bearer " + token, "secrethash": secrethash },
+            "dataSrc": "city",
+            "success": function(result){
+              alert(result);
+            }
+          }
+        }).on('change',function(){
+          //- alert(`${=id}`);
+          //- var text = $("#cityname option:selected").html().split("$");
+          //- $("#namebind").val(text[1]);
+        })
+        .on('completed', function() {
+          var selectedVal = $('#cityname').data('value');
+          if (selectedVal) {
+            $('#cityname').selectpicker('val', selectedVal);
+          }
+          $('#cityname').selectpicker('refresh');
+        });
+      // end test
+    });

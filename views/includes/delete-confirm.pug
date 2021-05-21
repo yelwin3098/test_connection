@@ -1,0 +1,24 @@
+div.modal.fade#dialogDeleteConfirm(tabindex='-1', role='dialog', aria-labelledby='deleteConfirm')
+  div.modal-dialog.modal-sm(role='document')
+    div.modal-content
+      div.modal-header
+        h4.modal-title Delete
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      div.modal-body
+        p Are you sure to delete?
+      div.modal-footer
+        button.btn.btn-primary#dialogAccept(type='button', data-dismiss='modal') Ok
+        button.btn.btn-secondary#dialogCancel(type='button', data-dismiss='modal') Cancel
+
+div.alert.alert-success.alert-dismissible#alertDeleteSuccess(role='alert', style="display:none;")
+  strong Success 
+  span#delSuccessMsg Delete Successful.
+  button.close(type='button', data-hide='alert', aria-label='Close')
+    span(aria-hidden='true') &times;
+
+div.alert.alert-danger.alert-dismissible#alertDeleteError(role='alert', style="display:none;")
+  strong Error 
+  span#delErrorMsg Can not delete data.
+  button.close(type='button', data-hide='alert', aria-label='Close')
+    span(aria-hidden='true') &times;

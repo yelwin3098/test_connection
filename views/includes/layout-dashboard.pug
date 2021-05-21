@@ -1,0 +1,45 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(content='IE=edge', http-equiv='X-UA-Compatible')
+    meta(content='width=device-width,initial-scale=1', name='viewport')
+    title= title
+    
+    link(rel="shortcut icon", href="/favicon.ico")
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/css/fontawesome-all.min.css')
+    link(rel='stylesheet', href='/css/datatables.css')
+    link(rel='stylesheet', href='/css/datatables.custom.css')
+    link(rel='stylesheet', href='/css/bootstrap-datepicker.standalone.css')
+    link(rel='stylesheet', href='/css/bootstrap-select.css')
+    link(rel='stylesheet', href='/css/dashboard.css')
+    link(rel='stylesheet', href='/css/style.css')
+
+    script(src='/js/jquery-3.3.1.min.js')
+    script(src='/js/date-and-time.min.js')
+    script(src='/js/purl.min.js')
+    script(src='/js/popper.min.js')
+    script(src='/js/bootstrap.min.js')
+    script(src='/js/datatables.min.js')
+    script(src='/js/datatables.render.date.js')
+    script(src='/js/bootstrap-datepicker.js')
+    script(src='/js/bootstrap-select.js')
+    script(src='/js/jquery.template.js')
+    script(src='/js/jquery.form.min.js')
+    script(src='/js/jquery.validate.min.js')
+    script(src='/js/jquery-md5.js')
+    
+  body
+    include nav-dashboard
+    // Main Content
+    div.container-fluid
+      div.row
+        include sidebar-dashboard
+        div.col-md-9.ml-sm-auto.col-lg-10.px-4.border-bottom(role="main")
+          block content
+          div.footer
+            div.col-md-12.text-center
+              p Developed by &copy; 
+                a(href="http://www.newwave-tech.com" target="_blank") Global New Wave Technology
+          script(src='/js/script.js')

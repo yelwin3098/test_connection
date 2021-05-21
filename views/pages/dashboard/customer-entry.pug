@@ -1,0 +1,99 @@
+extends ../../includes/layout-dashboard
+
+block content
+  ol.breadcrumb
+    li.breadcrumb-item
+      a(href="/dashboard") Home
+    li.breadcrumb-item
+      a(href="/customer") Customers
+    li.breadcrumb-item.active
+      span Entry
+  h1.page-header Customer Entry
+  div.row.from-wrapper
+    div.alert.alert-dismissible#alert(role='alert')
+      strong.alert-title#alertTitle
+      span#alertMessage
+      button.close(type='button', data-hide='alert', aria-label='Close')
+        span(aria-hidden='true') &times;
+
+    form.form-horizontal#entryForm(method='post', action=`${postUrl}`)
+      input#recordid(type='hidden', name='id', value=params.id)
+      input#createddate(type='hidden', name='createddate', value=params.created_date)
+    
+      div.form-group.row
+        label.col-sm-2.control-label(for='code') Customer Code
+        div.col-sm-10
+          input.form-control#customer_code(type='text', name='customer_code', value=params.customer_code, maxlength="55", required autofocus)
+
+      div.form-group.row
+        label.col-sm-2.control-label(for='customer') Customer Name
+        div.col-sm-10
+          input.form-control#customer(type='text', name='customer_name', value=params.customer_name, maxlength="55", required)
+      
+      div.form-group.row
+        label.col-sm-2.control-label(for='township_id') Township
+        div.col-sm-10
+          select#township_id.selectpicker.form-control(name='township_id', value=params.township_id, data-value=params.township_id, data-live-search="true", data-size="8")
+            option(value="") [Select one]
+
+      div.form-group.row
+        label.col-sm-2.control-label(for='description') Description
+        div.col-sm-10
+          input.form-control#description(type='text', name='customer_description', value=params.customer_description, maxlength="255")
+
+      div.row.justify-content-md-center.form-actions
+        button.btn.btn-primary(type='submit', role='button') Save
+        a.btn.btn-secondary#actionCancel(href=listUrl, role='button') Cancel
+
+    form#postSuccessForm(method='GET', action=listUrl)
+  script.
+    $(document).ready(function() {
+      $('div.sidebar-sticky li.nav-item').removeClass('active');
+      $('li#menu-customer').addClass('active');
+
+      $("#alert").hide();
+      $('#entryForm').ajaxForm({
+        success: function(data) {
+          if (data.success) {
+            $("#alertTitle").html("Success");
+            $("#alertMessage").html("Save Success!");
+            $("#alert").addClass("alert-success").show();
+
+            var postFrm = $('#postSuccessForm');
+            var params = $.url(postFrm.attr('action')).param();
+            if (!params) {
+              for(var key in params) {
+                postFrm.append($('<input type="hidden" name="'+key+'" value="'+ params[key] +'" />'));
+              }
+            }
+            window.setTimeout(function(){
+              postFrm.submit();
+            }, 2 * 1000);
+
+          } else {
+            $("#alertTitle").html("Error");
+            $("#alertMessage").html("Error on save!");
+            $("#alert").addClass("alert-danger").show();
+          }
+        }
+      });
+      
+      $('#township_id').click(function(){
+        alert("You clicked");
+      });
+      //- $('#township_id').Template({
+      //-   "template": "<option value='${=id}'>${=township}</option>",
+      //-   "ajax": {
+      //-     "url": "/api/township",
+      //-     "headers": {"authorization": "Bearer " + token},
+      //-     "dataSrc": "township"
+      //-   }
+      //- }).on('completed', function() {
+      //-   var selectedVal = $('#township_id').data('value');
+      //-   if (selectedVal) {
+      //-     $('#township_id').selectpicker('val', selectedVal);
+      //-   }
+      //-   $('#township_id').selectpicker('refresh');
+      //- });
+
+    });

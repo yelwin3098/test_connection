@@ -1,0 +1,71 @@
+extends ../../includes/layout-dashboard
+
+block content
+  ol.breadcrumb
+    li.breadcrumb-item
+      a(href="/dashboard") Home
+    li.breadcrumb-item.active
+      span Customers
+  h1.page-header Customers
+  include ../../includes/delete-confirm
+  div.table-responsive
+    table#list.table.table-striped
+      thead
+        tr
+          th #
+          th Customer Code
+          th Customer Name
+          th Description
+          th Township
+          th City
+          th.actions-2
+            a.btn.btn-success.list-action-text(href="./customer/entry", role="button", title="Add")
+              i.fa.fa-plus
+      tbody
+  script.
+    $(document).ready(function() {
+      var token = "!{token}";
+      $('div.sidebar-sticky li.nav-item').removeClass('active');
+      $('li#menu-customer').addClass('active');
+      //"/api/customer?columns=customer.*,township.*,city.*&join=left,township,township_id,eq,township.id&join=left,city,township.cityid,eq,city.id"
+      $.fn.dataTable.ext.errMode = 'none';
+      var table = $('table#list').on('error.dt', function(e, settings, techNote, message) {
+          console.log('DataTables Error: ', message);
+          alert('Read data error!');
+        }).DataTable({
+          "autoWidth": true,
+          "ajax": { 
+            "url": "/api/customer?columns=customer.*,township.township,city.city&join=left,township,township_id,eq,township.id&join=left,city,township.cityid,eq,city.id",
+            "headers": {"authorization": "Bearer " + token},
+            "dataSrc": "customer"
+          },
+          "columns": [
+              { "data": "id" },
+              { "data": "customer_code" },
+              { "data": "customer_name" },
+              { "data": "customer_description" },
+              { "data": "township" },
+              { "data": "city" },
+              { "data": "actions", "className": "nowrap" }
+          ],
+          "columnDefs": [
+            { targets: 0, render: dataTableIndexRenderer() },
+            { targets: 6, orderable: false, render: dataTableActionsRenderer("./customer/edit") }
+          ]
+      });
+
+      $('#dialogDeleteConfirm').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        $(this).attr('data-id', id);
+        $(this).find('#dialogAccept').on('click', function(ev) {
+          var deleteUrl = '/customer/delete/' + id;
+          doDelete(deleteUrl, token, function() {
+            table.ajax.reload();
+          });
+        });
+      }).on('hide.bs.modal', function (event) {
+        $(this).attr('data-id', '');
+        $(this).find('#dialogAccept').off('click');
+      });
+    });
